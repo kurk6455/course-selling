@@ -10,7 +10,7 @@ const userSchema = new Schema({
 
 const adminSchema = new Schema({
     adminName : String,
-    email : String, 
+    email : {type : String , unique : true}, 
     password : String
 })
 
@@ -28,12 +28,13 @@ const purchaseSchema = new Schema({
     courseId : ObjectId
 })
 
-const user = mongoose.model('user', userSchema);
-const admin = mongoose.model('user', adminSchema);
-const course = mongoose.model('user', courseSchema);
-const purchase = mongoose.model('user', purchaseSchema);
+//By default model name changes to plural
+const userModel = mongoose.model('users', userSchema);
+const adminModel = mongoose.model('admins', adminSchema);
+const courseModel = mongoose.model('courses', courseSchema);
+const purchaseModel = mongoose.model('purchases', purchaseSchema);
 
 
-module.exports = {
-    user, admin, course, purchase
-}
+export {
+    userModel, adminModel, courseModel, purchaseModel
+};

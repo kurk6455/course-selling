@@ -1,29 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script src="https://unpkg.com/axios@1.6.7/dist/axios.min.js"></script>
 </head>
+
 <body>
     <div>
         <p>Signup form : </p>
-        <input type="text" id="adminName" placeholder="Enter your name.."/><br>
-        <input type="text" id="signupEmail" placeholder="Enter your email.."/><br>
-        <input type="password" id="signupPassword" placeholder="Enter your password.."/><br>
+        <input type="text" id="adminName" placeholder="Enter your name.." /><br>
+        <input type="text" id="signupEmail" placeholder="Enter your email.." /><br>
+        <input type="password" id="signupPassword" placeholder="Enter your password.." /><br>
         <button id="SignupBtn">Sign up</button>
     </div>
 
     <div>
         <p>Login form : </p>
-        <input type="text" id="loginEmail" placeholder="Enter your email.."/><br>
-        <input type="password" id="loginPassword" placeholder="Enter your password.."/><br>
+        <input type="text" id="loginEmail" placeholder="Enter your email.." /><br>
+        <input type="password" id="loginPassword" placeholder="Enter your password.." /><br>
         <button id="loginBtn">login</button>
     </div>
 
     <br>
-    
+
     <div>
         <button onclick="userLogin()">login as user!!!</button>
     </div>
@@ -33,41 +35,59 @@
         const loginBtn = document.getElementById('loginBtn');
 
         SignupBtn.addEventListener('click', async (e) => {
-            const userName = document.getElementById('adminName').value;
+            const adminName = document.getElementById('adminName').value;
             const signupEmail = document.getElementById('signupEmail').value;
             const signupPassword = document.getElementById('signupPassword').value;
 
-            try{
-                const response = await axios.post('http://localhost:3000/adminSignup', {
-                    userName, email : signupEmail, password : signupPassword
+            try {
+                const response = await axios.post('http://localhost:3000/userSignup', {
+                    adminName, email: signupEmail, password: signupPassword
                 })
-    
+
                 console.log(response.data);
-            }catch(e){
-                console.log(e);
+            } catch (e) {
+                //logging all the zod error
+                if (e.response.data && e.response.data.errors) {
+                    const errors = e.response.data.errors;
+                    errors.forEach(ele => {
+                        console.log(ele.message);
+                    });
+                } else {
+                    console.log(e);
+                }
             }
         })
-        
-        
+
+
         loginBtn.addEventListener('click', async (e) => {
             const loginEmail = document.getElementById('loginEmail').value;
             const loginPassword = document.getElementById('loginPassword').value;
 
-            try{
-                const response = await axios.post('http://localhost:3000/adminLogin', {
-                    email : loginEmail, password : loginPassword
+            try {
+                const response = await axios.post('http://localhost:3000/userLogin', {
+                    email: loginEmail, password: loginPassword
                 })
-    
+
                 console.log(response.data);
+                localStorage.setItem('token', response.data.token);
                 window.location.href = './courses.html';
-            }catch(e){
-                console.log(e);
+            } catch (e) {
+                //logging all the zod error
+                if (e.response.data && e.response.data.errors) {
+                    const errors = e.response.data.errors;
+                    errors.forEach(ele => {
+                        console.log(ele.message);
+                    });
+                } else {
+                    console.log(e);
+                }
             }
         })
 
-        function userLogin(){
+        function userLogin() {
             window.location.href = "./index.html";
         }
     </script>
 </body>
+
 </html>
