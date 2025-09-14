@@ -4,13 +4,13 @@ import mongoose from 'mongoose';
 import { userModel, adminModel, courseModel, purchaseModel } from './db.mjs';
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
-const { JWT_SECRET } = process.env;
-import bcrypt, { compareSync } from 'bcrypt';
+const { JWT_SECRET, mongodbClusterString } = process.env;
+import bcrypt from 'bcrypt';
 import {userAuth, adminAuth, zodAuth} from './auth.mjs';
 
 const app = express();
 try {
-    await mongoose.connect(process.env.mongodbClusterString);
+    await mongoose.connect(mongodbClusterString);
     console.log("database connection successfull");
 } catch (e) {
     console.log(e)

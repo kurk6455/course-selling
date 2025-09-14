@@ -69,6 +69,7 @@
                 })
 
                 console.log(response.data);
+                //BROKEN - user token already present with the same token name
                 localStorage.setItem('token', response.data.token);
                 window.location.href = './courses.html';
             } catch (e) {
