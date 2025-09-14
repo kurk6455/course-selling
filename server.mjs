@@ -2,10 +2,12 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import 'dotenv/config';
+import { JsonWebTokenError as jwt } from 'jsonwebtoken';
+const {JWT_SECRET} = process.env;
 
 const app = express();
 try{
-    await mongoose.connect(process.env.mongodbClusterString);
+    mongoose.connect(process.env.mongodbClusterString);
     console.log("database connection successfull");
 }catch(e){
     console.log(e)
@@ -18,8 +20,10 @@ app.use(express.json());
 
 app.post('/userSignup', (req, res) => {
     console.log(req.body);
-    const {userName, signupEmail, signupPassword} = req.body;
+    const {userName, email, password} = req.body;
     console.log(userName);
+
+    //check if the email exists
 
     res.json({
         message : "Signup successful"
@@ -27,8 +31,8 @@ app.post('/userSignup', (req, res) => {
 })
 
 app.post('/userLogin', (req, res) => {
-    const {loginEmail, loginPassword} = req.body;
-    console.log(loginEmail +" "+loginPassword)
+    const {email, password} = req.body;
+    console.log(email +" "+password)
 
     res.json({
         message : "LOgin successful"
@@ -58,7 +62,7 @@ app.post('/purchasedCourses', (req, res) => {
 
 app.post('/adminSignup', (req, res) => {
     console.log(req.body);
-    const {userName, signupEmail, signupPassword} = req.body;
+    const {userName, email, password} = req.body;
     console.log(userName);
 
     res.json({
@@ -67,8 +71,8 @@ app.post('/adminSignup', (req, res) => {
 })
 
 app.post('/adminLogin', (req, res) => {
-    const {loginEmail, loginPassword} = req.body;
-    console.log(loginEmail +" "+loginPassword)
+    const {email, password} = req.body;
+    console.log(email +" "+password)
 
     res.json({
         message : "LOgin successful"

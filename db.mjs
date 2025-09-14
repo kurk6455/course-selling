@@ -1,10 +1,10 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const {Schema} = mongoose;
 const {ObjectId} = Schema;
 
 const userSchema = new Schema({
     userName : String,
-    email : String, 
+    email : {type : String , unique : true}, 
     password : String
 })
 

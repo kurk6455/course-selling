@@ -9,7 +9,7 @@
 <body>
     <div>
         <p>Signup form : </p>
-        <input type="text" id="userName" placeholder="Enter your name.."/><br>
+        <input type="text" id="adminName" placeholder="Enter your name.."/><br>
         <input type="text" id="signupEmail" placeholder="Enter your email.."/><br>
         <input type="password" id="signupPassword" placeholder="Enter your password.."/><br>
         <button id="SignupBtn">Sign up</button>
@@ -22,10 +22,10 @@
         <button id="loginBtn">login</button>
     </div>
 
-    <br> 
+    <br>
     
     <div>
-        <button onclick="adminLogin()">login as admin!!!</button>
+        <button onclick="userLogin()">login as user!!!</button>
     </div>
 
     <script>
@@ -33,12 +33,12 @@
         const loginBtn = document.getElementById('loginBtn');
 
         SignupBtn.addEventListener('click', async (e) => {
-            const userName = document.getElementById('userName').value;
+            const userName = document.getElementById('adminName').value;
             const signupEmail = document.getElementById('signupEmail').value;
             const signupPassword = document.getElementById('signupPassword').value;
 
             try{
-                const response = await axios.post('http://localhost:3000/userSignup', {
+                const response = await axios.post('http://localhost:3000/adminSignup', {
                     userName, email : signupEmail, password : signupPassword
                 })
     
@@ -54,7 +54,7 @@
             const loginPassword = document.getElementById('loginPassword').value;
 
             try{
-                const response = await axios.post('http://localhost:3000/userLogin', {
+                const response = await axios.post('http://localhost:3000/adminLogin', {
                     email : loginEmail, password : loginPassword
                 })
     
@@ -65,8 +65,8 @@
             }
         })
 
-        function adminLogin(){
-            window.location.href = "./adminLogin.html";
+        function userLogin(){
+            window.location.href = "./index.html";
         }
     </script>
 </body>
