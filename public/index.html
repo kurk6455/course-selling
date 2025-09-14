@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/axios@1.6.7/dist/axios.min.js"></script>
+</head>
+<body>
+    <div>
+        <p>Signup form : </p>
+        <input type="text" id="userName" placeholder="Enter your name.."/><br>
+        <input type="text" id="signupEmail" placeholder="Enter your email.."/><br>
+        <input type="password" id="signupPassword" placeholder="Enter your password.."/><br>
+        <button id="SignupBtn">Sign up</button>
+    </div>
+
+    <div>
+        <p>Login form : </p>
+        <input type="text" id="loginEmail" placeholder="Enter your email.."/><br>
+        <input type="password" id="loginPassword" placeholder="Enter your password.."/><br>
+        <button id="loginBtn">login</button>
+    </div>
+
+    <script>
+        const signupBtn = document.getElementById('SignupBtn');
+        const loginBtn = document.getElementById('loginBtn');
+
+        SignupBtn.addEventListener('click', async (e) => {
+            const userName = document.getElementById('userName').value;
+            const signupEmail = document.getElementById('signupEmail').value;
+            const signupPassword = document.getElementById('signupPassword').value;
+
+            try{
+                const response = await axios.post('http://localhost:3000/userSignup', {
+                    userName, signupEmail, signupPassword
+                })
+    
+                console.log(response.data);
+            }catch(e){
+                console.log(e);
+            }
+        })
+        
+        
+        loginBtn.addEventListener('click', async (e) => {
+            const loginEmail = document.getElementById('loginEmail').value;
+            const loginPassword = document.getElementById('loginPassword').value;
+
+            try{
+                const response = await axios.post('http://localhost:3000/userLogin', {
+                    loginEmail, loginPassword
+                })
+    
+                console.log(response.data);
+                window.location.href = './courses.html';
+            }catch(e){
+                console.log(e);
+            }
+        })
+    </script>
+</body>
+</html>
