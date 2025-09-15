@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/axios@1.6.7/dist/axios.min.js"></script>
+</head>
+
+<body>
+    <div id="courseList">
+        <h1>Course list -</h1>
+        <div id="a123" style="font-weight: 500;">
+            <div id="courseName">Course Name - Web development</div>
+            <div id="instructor">Instructor - colt steel</div>
+            <div id="price">Price - 4000</div>
+            <div id="detail">
+                <div id="summary">Summary - WEb development using html, css, js</div>
+                <div id="duration">hrs - 55</div>
+                <div id="practiseTest">Practise Test - 5</div>
+                <div id="certificate">Certificate of completion - true</div>
+            </div>
+        </div><br><br>
+    </div>
+
+    </div>
+    <div id="couseDetailForm">
+        <h3>Add Course -</h3>
+        <input type="text" id="courseNameBox" placeholder="Enter course name ..." />
+        <input type="text" id="instructorBox" placeholder="Enter course instructor ..." />
+        <input type="text" id="priceBox" placeholder="Enter course price ..." />
+        <div>
+            <p>Detail - </p>
+            <input type="text" id="summaryBox" placeholder="Enter course summary ..." />
+            <input type="text" id="durationBox" placeholder="Enter course duration ..." />
+            <input type="text" id="practiseTestBox" placeholder="Enter course practiseTest ..." /><br />
+        </div>
+        <label for="certificate">Certificate of completion -</label>
+        <input type="checkbox" id="certificateBox" checked><br><br>
+        <button id="addBtn" onclick="addCourse(id)">Add Course</button>
+    </div>
+
+
+    <script>
+        //select all the element from courseListForm
+        const courseList = document.getElementById('courseList');
+        const courseNameBox = document.getElementById('courseNameBox');
+        const instructorBox = document.getElementById('instructorBox');
+        const priceBox = document.getElementById('priceBox');
+        const summaryBox = document.getElementById('summaryBox');
+        const durationBox = document.getElementById('durationBox');
+        const practiseTestBox = document.getElementById('practiseTestBox');
+        const certificateBox = document.getElementById('certificateBox');
+
+        async function addCourse() {
+            //Extract values
+            const courseName = courseNameBox.value;
+            const instructor = instructorBox.value;
+            const price = priceBox.value;
+            const duration = durationBox.value;
+            const summary = summaryBox.value;
+            const practiseTest = practiseTestBox.value;
+            let certificate = false;
+            if(certificateBox.value === 'on'){
+                certificate = true
+            }
+
+            console.log(certificate);
+
+            //Create a new div element
+            const courseEle = document.createElement('div');
+            courseEle.innerHTML = `
+            <div  id="courseName">Course Name - ${courseName}</div>
+            <div  id="instructor">Instructor - ${instructor}</div>
+            <div  id="price">Price - ${price}</div>
+            <div id="detail">
+                <div  id="summary">Summary - ${summary}</div>
+                <div  id="duration">hrs - ${duration}</div>
+                <div  id="practiseTest">Practise Test - ${practiseTest}</div>
+                <div  id="certificate">Certificate of completion - ${certificate}</div>
+            </div>`;
+            //Update it's style
+            courseEle.style.fontWeight = 500;
+            courseEle.style.opacity = 0.5;
+
+            //Append it to courseListForm
+            courseList.appendChild(courseEle);
+            courseNameBox.value = ""; instructorBox.value = ""; priceBox.value = "";
+            summaryBox.value = ""; durationBox.value = ""; practiseTestBox.value = "";
+            certificateBox.value = "";
+
+            try {
+                const response = await axios({
+                    method : 'post',
+                    url : 'http://localhost:3000/course',
+                    data: {
+                        courseName, instructor, price, detail : {summary, duration, practiseTest, certificate}
+                    }
+                })
+
+                const {course} = response.data;
+                console.log(course);
+                courseEle.innerHTML = `
+                <div  id="courseName">Course Name - ${course.courseName}</div>
+                <div  id="instructor">Instructor - ${course.instructor}</div>
+                <div  id="price">Price - ${course.price}</div>
+                <div id="detail">
+                    <div  id="summary">Summary - ${course.detail.summary}</div>
+                    <div  id="duration">hrs - ${course.detail.duration}</div>
+                    <div  id="practiseTest">Practise Test - ${course.detail.practiseTest}</div>
+                    <div  id="certificate">Certificate of completion - ${course.detail.certificate}</div>
+                </div>
+                <button onclick="deleteCourse('${course._id}')">delete course</button>
+                <button onclick="updateCourse('${course._id}')">update course</button>
+                <br><br>`;
+                courseEle.setAttribute('class', 'course');
+                courseEle.setAttribute('id', course._id);
+                courseEle.style.opacity = 1;
+                
+            } catch (e) {
+                console.log(e);
+            }
+        }
+
+        async function deleteCourse(id) {
+            const ele = document.getElementById(id);
+            ele.parentNode.removeChild(ele);
+
+            try {
+                const response = await axios.delete('http://localhost:3000/course', {
+                    data: {
+                        courseId: id
+                    }
+                })
+
+                console.log(response);
+            } catch (e) {
+                console.log(e);
+            }
+        }
+
+        function updateCourse(id) {
+            const ele = document.getElementById(id);
+            const courseBox = ele.querySelector('#courseName');
+            const courseName = courseBox.value;
+
+            ele.innerHTML = `<input type="text" id="courseName" placeholder="${courseName}..."/>
+            <button id="saveBtn" onclick="saveCourse(${id})">Save course...</button>`
+        }
+
+        async function saveCourse(id) {
+            const ele = document.getElementById(id);
+            const courseBox = ele.querySelector('#courseName');
+            const courseName = courseBox.value;
+
+            ele.textContent = courseName;
+            ele.style.opacity = 0.5;
+
+            try {
+                const response = await axios.put('http://localhost:3000/course', {
+                    data: {
+                        courseId: id
+                    }
+                })
+
+                ele.innerHTML = `<div id='${response.data.courseId}'>${courseName}</div> 
+                <button onclick="deleteCourse('${response.data.courseId}')">delete</button>
+                <button onclick="updateCourse('${response.data.courseId}')">update</button>`
+                courseDetail.style.opacity = 1;
+            } catch (e) {
+                console.log(e);
+            }
+        }
+
+
+
+
+    </script>
+</body>
+
+</html>

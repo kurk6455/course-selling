@@ -114,7 +114,6 @@ app.post('/purchase', userAuth, async (req, res) => {
     }
 })
 
-
 app.post('/purchasedCourse',userAuth, async (req, res) => {
     const { userId } = req.headers;
     console.log(userId);
@@ -213,10 +212,24 @@ app.post('/adminLogin', zodAuth, async (req, res) => {
     }
 })
 
-app.post('/course', (req, res) => {
-    res.json({
-        message: "creating course"
-    })
+app.post('/course', async (req, res) => {
+    const { courseName, instructor, price, detail} = req.body;
+    console.log(courseName, detail);
+
+    try{
+        const course = await courseModel.create({
+            courseName, instructor, price, detail
+        })
+
+        res.json({
+            message : "course creation successfull",
+            course
+        })
+    }catch(e){
+        return res.status(500).json({
+            message : "DB error"
+        })
+    }
 })
 
 app.put('/course', (req, res) => {

@@ -12,15 +12,18 @@ const adminSchema = new Schema({
     adminName : String,
     email : {type : String , unique : true}, 
     password : String
-})
+})  
 
 const courseSchema = new Schema({
     courseName : String, 
     instructor : String, 
     price : Number, 
-    detail : String, 
-    review : Number,
-    learners : Number
+    detail : {
+        summary : String,
+        duration : String,
+        practiseTest : Number,
+        certificate : Boolean
+    }
 })
 
 const purchaseSchema = new Schema({

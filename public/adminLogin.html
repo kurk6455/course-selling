@@ -9,6 +9,7 @@
 </head>
 
 <body>
+    <h1>Admin login -</h1>
     <div>
         <p>Signup form : </p>
         <input type="text" id="adminName" placeholder="Enter your name.." /><br>
@@ -71,7 +72,7 @@
                 console.log(response.data);
                 //BROKEN - user token already present with the same token name
                 localStorage.setItem('token', response.data.token);
-                window.location.href = './courses.html';
+                window.location.href = './course.html';
             } catch (e) {
                 //logging all the zod error
                 if (e.response.data && e.response.data.errors) {
