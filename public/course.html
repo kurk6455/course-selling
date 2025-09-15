@@ -11,17 +11,7 @@
 <body>
     <div id="courseList">
         <h1>Course list -</h1>
-        <div id="a123" style="font-weight: 500;">
-            <div id="courseName">Course Name - Web development</div>
-            <div id="instructor">Instructor - colt steel</div>
-            <div id="price">Price - 4000</div>
-            <div id="detail">
-                <div id="summary">Summary - WEb development using html, css, js</div>
-                <div id="duration">hrs - 55</div>
-                <div id="practiseTest">Practise Test - 5</div>
-                <div id="certificate">Certificate of completion - true</div>
-            </div>
-        </div><br><br>
+        
     </div>
 
     </div>
@@ -53,6 +43,48 @@
         const practiseTestBox = document.getElementById('practiseTestBox');
         const certificateBox = document.getElementById('certificateBox');
 
+
+        async function onLoad(){
+            try{
+                const response = await axios({
+                    method : 'get',
+                    url : 'http://localhost:3000/courses',
+                })
+
+                const {courses} = response.data;
+                const len = courses.length;
+
+                courses.forEach( course => {
+                    //Create a new div element
+                    const courseEle = document.createElement('div');
+                    courseEle.innerHTML = `
+                    <div  id="courseName">Course Name - ${course.courseName}</div>
+                    <div  id="instructor">Instructor - ${course.instructor}</div>
+                    <div  id="price">Price - ${course.price}</div>
+                    <div id="detail">
+                        <div  id="summary">Summary - ${course.detail.summary}</div>
+                        <div  id="duration">hrs - ${course.detail.duration}</div>
+                        <div  id="practiseTest">Practise Test - ${course.detail.practiseTest}</div>
+                        <div  id="certificate">Certificate of completion - ${course.detail.certificate}</div>
+                    </div>
+                    <button onclick="deleteCourse('${course._id}')">delete course</button>
+                    <button onclick="updateCourse('${course._id}')">update course</button>
+                    <br><br>`;
+
+                    courseEle.style.fontWeight = 500;
+                    courseEle.setAttribute('class', 'course');
+                    courseEle.setAttribute('id', course._id);
+
+
+                    courseList.appendChild(courseEle);
+                });
+            }catch(e){
+                console.log(e);
+            }
+        }
+        onLoad();
+
+
         async function addCourse() {
             //Extract values
             const courseName = courseNameBox.value;
@@ -62,7 +94,7 @@
             const summary = summaryBox.value;
             const practiseTest = practiseTestBox.value;
             let certificate = false;
-            if(certificateBox.value === 'on'){
+            if (certificateBox.value === 'on') {
                 certificate = true
             }
 
@@ -92,14 +124,14 @@
 
             try {
                 const response = await axios({
-                    method : 'post',
-                    url : 'http://localhost:3000/course',
+                    method: 'post',
+                    url: 'http://localhost:3000/course',
                     data: {
-                        courseName, instructor, price, detail : {summary, duration, practiseTest, certificate}
+                        courseName, instructor, price, detail: { summary, duration, practiseTest, certificate }
                     }
                 })
 
-                const {course} = response.data;
+                const { course } = response.data;
                 console.log(course);
                 courseEle.innerHTML = `
                 <div  id="courseName">Course Name - ${course.courseName}</div>
@@ -117,7 +149,7 @@
                 courseEle.setAttribute('class', 'course');
                 courseEle.setAttribute('id', course._id);
                 courseEle.style.opacity = 1;
-                
+
             } catch (e) {
                 console.log(e);
             }
@@ -128,13 +160,15 @@
             ele.parentNode.removeChild(ele);
 
             try {
-                const response = await axios.delete('http://localhost:3000/course', {
+                const response = await axios({
+                    method: 'delete',
+                    url: 'http://localhost:3000/course',
                     data: {
                         courseId: id
                     }
                 })
 
-                console.log(response);
+                console.log(response.data);
             } catch (e) {
                 console.log(e);
             }
@@ -142,40 +176,89 @@
 
         function updateCourse(id) {
             const ele = document.getElementById(id);
-            const courseBox = ele.querySelector('#courseName');
-            const courseName = courseBox.value;
 
-            ele.innerHTML = `<input type="text" id="courseName" placeholder="${courseName}..."/>
-            <button id="saveBtn" onclick="saveCourse(${id})">Save course...</button>`
+            //select all the element from ele
+            const courseName = ele.querySelector('#courseName').textContent;
+            const instructor = ele.querySelector('#instructor').textContent;
+            const price = ele.querySelector('#price').textContent;
+            const summary = ele.querySelector('#summary').textContent;
+            const duration = ele.querySelector('#duration').textContent;
+            const practiseTest = ele.querySelector('#practiseTest').textContent;
+            const certificate = ele.querySelector('#certificate').textContent;
+
+            //creating an updating form in the same instance
+            ele.innerHTML = `
+            <input type="text" id="courseNameBox" placeholder="${courseName} ..." required/>
+            <input type="text" id="instructorBox" placeholder="${instructor} ..." required/>
+            <input type="text" id="priceBox" placeholder="${price} ..." required/>
+            <div>
+                <p>Detail - </p>
+                <input type="text" id="summaryBox" placeholder="${summary} ..." required/>
+                <input type="text" id="durationBox" placeholder="${duration} ..." required/>
+                <input type="text" id="practiseTestBox" placeholder="${practiseTest} ..." required/><br />
+            </div>
+            <label for="certificate">Certificate of completion -</label>
+            <input type="checkbox" id="certificateBox" checked><br><br>
+            <button id="saveBtn" onclick="saveCourse('${id}')">Save Course</button>
+            <br><br>`;
         }
 
         async function saveCourse(id) {
             const ele = document.getElementById(id);
-            const courseBox = ele.querySelector('#courseName');
-            const courseName = courseBox.value;
+            //select all the value of element from ele form
+            const courseName = ele.querySelector('#courseNameBox').value;
+            const instructor = ele.querySelector('#instructorBox').value;
+            const price = ele.querySelector('#priceBox').value;
+            const summary = ele.querySelector('#summaryBox').value;
+            const duration = ele.querySelector('#durationBox').value;
+            const practiseTest = ele.querySelector('#practiseTestBox').value;
+            let certificate = ele.querySelector('#certificateBox').value;  
+            if(certificate == 'on') certificate = true;
+            else certificate = false;      
 
-            ele.textContent = courseName;
+            ele.innerHTML = `
+            <div  id="courseName">Course Name - ${courseName}</div>
+            <div  id="instructor">Instructor - ${instructor}</div>
+            <div  id="price">Price - ${price}</div>
+            <div id="detail">
+                <div  id="summary">Summary - ${summary}</div>
+                <div  id="duration">hrs - ${duration}</div>
+                <div  id="practiseTest">Practise Test - ${practiseTest}</div>
+                <div  id="certificate">Certificate of completion - ${certificate}</div>
+            </div>`;
             ele.style.opacity = 0.5;
 
             try {
-                const response = await axios.put('http://localhost:3000/course', {
+                console.log("client side - try block")
+                const response = await axios({
+                    method: 'put',
+                    url: 'http://localhost:3000/course',
                     data: {
-                        courseId: id
+                        courseId : id, courseName, instructor, price, detail: { summary, duration, practiseTest, certificate }
                     }
                 })
 
-                ele.innerHTML = `<div id='${response.data.courseId}'>${courseName}</div> 
-                <button onclick="deleteCourse('${response.data.courseId}')">delete</button>
-                <button onclick="updateCourse('${response.data.courseId}')">update</button>`
-                courseDetail.style.opacity = 1;
+                console.log("client side - after response")
+
+                const {course} = response.data;
+                ele.innerHTML = `
+                <div  id="courseName">Course Name - ${course.courseName}</div>
+                <div  id="instructor">Instructor - ${course.instructor}</div>
+                <div  id="price">Price - ${course.price}</div>
+                <div id="detail">
+                    <div  id="summary">Summary - ${course.detail.summary}</div>
+                    <div  id="duration">hrs - ${course.detail.duration}</div>
+                    <div  id="practiseTest">Practise Test - ${course.detail.practiseTest}</div>
+                    <div  id="certificate">Certificate of completion - ${course.detail.certificate}</div>
+                </div>
+                <button onclick="deleteCourse('${course._id}')">delete course</button>
+                <button onclick="updateCourse('${course._id}')">update course</button>
+                <br><br>`;
+                ele.style.opacity = 1;
             } catch (e) {
                 console.log(e);
             }
         }
-
-
-
-
     </script>
 </body>
 

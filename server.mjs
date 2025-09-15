@@ -80,7 +80,7 @@ app.post('/userLogin', zodAuth, async (req, res) => {
     }
 })
 
-app.get('/courses', userAuth, async (req, res) => {
+app.get('/courses', async (req, res) => {
     //DB call - only after user has been authenticated
     try{
         const courses = await courseModel.find({});
@@ -227,21 +227,46 @@ app.post('/course', async (req, res) => {
         })
     }catch(e){
         return res.status(500).json({
-            message : "DB error"
+            message : "DB error while creating"
         })
     }
 })
 
-app.put('/course', (req, res) => {
-    res.json({
-        message: "updating course"
-    })
+app.put('/course', async (req, res) => {
+    const { courseId, courseName, instructor, price, detail} = req.body;
+    console.log(courseId, detail);
+
+    try{
+        console.log("inside try block");
+        const course = await courseModel.findByIdAndUpdate(courseId,{
+            courseName, instructor, price, detail
+        })
+        console.log("updation finish");
+
+        res.json({
+            message : "course updation successfull",
+            course
+        })
+    }catch(e){
+        console.log(e);
+        return res.status(500).json({
+            message : "DB error while updating"
+        })
+    }
 })
 
 app.delete('/course', (req, res) => {
-    res.json({
-        message: "deleting course"
-    })
+    try{
+        const course = courseModel.findByIdAndDelete(req.body.courseId);
+        
+        res.json({
+            message : "course delete successful"
+        })
+    }catch(e){
+        res.status(500).json({
+            message: "DB error while deleting"
+        })
+    }
 })
 
 app.listen(3000, () => {
