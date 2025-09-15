@@ -80,24 +80,76 @@ app.post('/userLogin', zodAuth, async (req, res) => {
     }
 })
 
-app.post('/purchase', (req, res) => {
-    const { id } = req.body;
+app.get('/courses', userAuth, async (req, res) => {
+    //DB call - only after user has been authenticated
+    try{
+        const courses = await courseModel.find({});
 
-    res.json({
-        message: `purchase course : ${id}`
-    })
+        res.json({
+            courses
+        })
+    }catch(e){
+        return res.status(500).json({
+            message : "Unable to find courses"
+        });
+    }
 })
 
-app.get('/courses', (req, res) => {
-    res.json({
-        message: "All courses"
-    })
+app.post('/purchase', userAuth, async (req, res) => {
+    const {userId} = req.headers;
+    const {courseId} = req.body;
+
+    try{
+        const purchase = purchaseModel.create({
+            userId, courseId
+        })
+
+        res.json({
+            message : `Purchase successful`
+        })
+    }catch(e){
+        res.status(500).json({
+            message : "Unable to find the course"
+        })
+    }
 })
 
-app.post('/purchasedCourse', (req, res) => {
-    res.json({
-        message: "At purchased course endpoint"
-    })
+
+app.post('/purchasedCourse',userAuth, async (req, res) => {
+    const { userId } = req.headers;
+    console.log(userId);
+
+    try{
+        const purchased = await purchaseModel.find({
+            userId
+        })        
+        console.log(purchased[0].courseId)
+        console.log(purchased[1].courseId)
+        try{
+            const purchasedCourse = await courseModel.find({
+               _id : {
+                $in : [
+                    //convert ObjectId to string
+                    purchased[0].courseId.toString(),
+                    purchased[1].courseId.toString()
+                ]
+               }
+            })
+            console.log(purchasedCourse);
+    
+            res.json({
+                purchasedCourse
+            })
+        }catch(e){
+            return res.status(500).json({
+                message : "unable to find the course that you purchased"
+            })
+        }
+    }catch(e){
+        return res.status(500).json({
+            message : "unable to find the purchased courses"
+        })
+    }
 })
 
 

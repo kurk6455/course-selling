@@ -20,6 +20,19 @@
     
 
     <script>
+        async function onLoad(){
+            try{
+                const response = await axios.get('http://loccalhost:3000/courses', {
+                    headers : {
+                        token : localStorage.getItem('token')
+                    }
+                }); 
+
+                console.log(response.data.courses);
+            }catch(e){
+                console.log(e);
+            }
+        }
         async function addCourse(id){
             try{
                 const response = await axios.post('http://localhost:3000/purchase', {
