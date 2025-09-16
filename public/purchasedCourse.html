@@ -9,7 +9,6 @@
 </head>
 
 <body>
-    <button onclick="purchasedCourse()">See all your purchased course</button>
     <div id="Courses">
         <h1>Course list -</h1>
         <div id="courseList">
@@ -43,26 +42,25 @@
                     <span>${course.detail.certificate}</span>
                 </div>
             </div>
-            <button onclick="purchase('${course._id}')">Purchase Course</button>
+            <button onclick="purchase('${course._id}')">delete course</button>
             <br><br>
         </div>
     </div>
 
     <script>
-        function purchasedCourse() {
-            window.location.href = "./purchasedCourse.html";
-        }
-
-
         async function onLoad() {
             try {
                 const response = await axios({
                     method: 'get',
-                    url: 'http://localhost:3000/courses',
+                    url: 'http://localhost:3000/purchasedCourse',
+                    headers: {
+                        token : localStorage.getItem('token')
+                    }
                 })
 
                 const { courses } = response.data;
                 courseList.innerHTML = "";
+                console.log(courses);
 
                 courses.forEach(course => {
                     //Create a new div element
@@ -98,7 +96,7 @@
                             <span>${course.detail.certificate}</span>
                         </div>
                     </div>
-                    <button onclick="purchase('${course._id}')">Purchase course</button>
+                    <button onclick="deleteFn('${course._id}')">delete course</button>
                     <br><br>`;
 
                     courseEle.setAttribute('class', 'course');
@@ -113,14 +111,16 @@
         }
         onLoad();
 
-        async function purchase(id) {
+        async function deleteFn(id) {
             const courseEle = document.getElementById(id);
-            courseEle.style.opacity = 0.5;
+            courseEle.parentElement.removeChild(courseEle);
+            console.log(id);
+            console.log(localStorage.getItem('token'));
 
             try {
                 const response = await axios({
-                    method: 'post',
-                    url: 'http://localhost:3000/purchase',
+                    method: 'delete',
+                    url: 'http://localhost:3000/purchasedCourse',
                     data: {
                         courseId: id
                     },
@@ -129,10 +129,9 @@
                     }
                 })
 
+                console.log("client side - After deletion")
+
                 console.log(response.data);
-                const btn = courseEle.querySelector('button');
-                btn.parentNode.removeChild(btn);
-                courseEle.style.opacity = 1;
             } catch (e) {
                 console.log(e);
             }

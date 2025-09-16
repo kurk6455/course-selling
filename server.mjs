@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 import 'dotenv/config';
 const { JWT_SECRET, mongodbClusterString } = process.env;
 import bcrypt from 'bcrypt';
-import {userAuth, adminAuth, zodAuth} from './auth.mjs';
+import { userAuth, adminAuth, zodAuth } from './auth.mjs';
 
 const app = express();
 try {
@@ -49,19 +49,19 @@ app.post('/userSignup', zodAuth, async (req, res) => {
 app.post('/userLogin', zodAuth, async (req, res) => {
     //If validate retrive
     const { email, password } = req.body;
-    console.log(email + " " + password); 
+    console.log(email + " " + password);
 
     //DB call
-    try{
+    try {
         const user = await userModel.findOne({
             email
         })
 
         //compare b/w the plain password and hashed
         const decodedPassword = await bcrypt.compare(password, user.password);
-        if(!decodedPassword){
+        if (!decodedPassword) {
             return res.status(403).json({
-                message : "User : Invalid password"
+                message: "User : Invalid password"
             });
         }
 
@@ -69,84 +69,95 @@ app.post('/userLogin', zodAuth, async (req, res) => {
         const token = jwt.sign(user._id.toString(), JWT_SECRET);
 
         res.json({
-            token : `bearer user ${token}`,
-            message : "User : login successful"
+            token: `bearer user ${token}`,
+            message: "User : login successful"
         })
 
-    }catch(e){
+    } catch (e) {
         return res.status(403).json({
-            message : "User : Invalid email"
+            message: "User : Invalid email"
         })
     }
 })
 
 app.get('/courses', async (req, res) => {
-    //DB call - only after user has been authenticated
-    try{
+    //DB call - without authentication
+    try {
         const courses = await courseModel.find({});
 
         res.json({
             courses
         })
-    }catch(e){
+    } catch (e) {
         return res.status(500).json({
-            message : "Unable to find courses"
+            message: "Unable to find courses"
         });
     }
 })
 
 app.post('/purchase', userAuth, async (req, res) => {
-    const {userId} = req.headers;
-    const {courseId} = req.body;
+    const { userId } = req.headers;
+    const { courseId } = req.body;
 
-    try{
+    try {
         const purchase = purchaseModel.create({
             userId, courseId
         })
 
         res.json({
-            message : `Purchase successful`
+            message: `Purchase successful`
         })
-    }catch(e){
+    } catch (e) {
         res.status(500).json({
-            message : "Unable to find the course"
+            message: "Unable to find the course"
         })
     }
 })
 
-app.post('/purchasedCourse',userAuth, async (req, res) => {
+app.get('/purchasedCourse', userAuth, async (req, res) => {
     const { userId } = req.headers;
+    // console.log(userId);
+
+    try {
+        const purchased = await purchaseModel.find({ userId });
+        if (purchased.length == 0) {
+            return res.status(200).json({
+                courses: []
+            });
+        }
+        // console.log(purchased);
+        const courseIds = purchased.map(ele => ele.courseId);
+        const courses = await courseModel.find({
+            _id: {
+                $in : courseIds
+            }
+        })
+
+        // console.log(courses);
+        res.json({
+            courses
+        })
+    } catch (e) {
+        return res.status(500).json({
+            message: "unable to find the course that you purchased"
+        })
+    }
+})
+
+app.delete('/purchasedCourse', userAuth, async (req, res) => {
+    const { userId } = req.headers;
+    const { courseId } = req.body;
     console.log(userId);
 
-    try{
-        const purchased = await purchaseModel.find({
-            userId
-        })        
-        console.log(purchased[0].courseId)
-        console.log(purchased[1].courseId)
-        try{
-            const purchasedCourse = await courseModel.find({
-               _id : {
-                $in : [
-                    //convert ObjectId to string
-                    purchased[0].courseId.toString(),
-                    purchased[1].courseId.toString()
-                ]
-               }
-            })
-            console.log(purchasedCourse);
-    
-            res.json({
-                purchasedCourse
-            })
-        }catch(e){
-            return res.status(500).json({
-                message : "unable to find the course that you purchased"
-            })
-        }
-    }catch(e){
+    try {
+        const purchased = await purchaseModel.findOneAndDelete({ userId, courseId });
+
+        res.json({
+            message: "Course delete successfull"
+        })
+    } catch (e) {
         return res.status(500).json({
-            message : "unable to find the purchased courses"
+            message: "unable to delete course that you purchased"
         })
     }
 })
@@ -180,19 +191,19 @@ app.post('/adminSignup', zodAuth, async (req, res) => {
 app.post('/adminLogin', zodAuth, async (req, res) => {
     //If validate retrive
     const { email, password } = req.body;
-    console.log(email + " " + password); 
+    console.log(email + " " + password);
 
     //DB call
-    try{
+    try {
         const admin = await adminModel.findOne({
             email
         })
 
         //compare b/w the plain password and hashed
         const decodedPassword = await bcrypt.compare(password, admin.password);
-        if(!decodedPassword){
+        if (!decodedPassword) {
             return res.status(403).json({
-                message : "admin : Invalid password"
+                message: "admin : Invalid password"
             });
         }
 
@@ -201,70 +212,70 @@ app.post('/adminLogin', zodAuth, async (req, res) => {
         const token = jwt.sign(admin._id.toString(), JWT_SECRET);
 
         res.json({
-            token : `bearer admin ${token}`,
-            message : "admin : login successful"
+            token: `bearer admin ${token}`,
+            message: "admin : login successful"
         })
 
-    }catch(e){
+    } catch (e) {
         return res.status(403).json({
-            message : "admin : Invalid email"
+            message: "admin : Invalid email"
         })
     }
 })
 
 app.post('/course', async (req, res) => {
-    const { courseName, instructor, price, detail} = req.body;
+    const { courseName, instructor, price, detail } = req.body;
     console.log(courseName, detail);
 
-    try{
+    try {
         const course = await courseModel.create({
             courseName, instructor, price, detail
         })
 
         res.json({
-            message : "course creation successfull",
+            message: "course creation successfull",
             course
         })
-    }catch(e){
+    } catch (e) {
         return res.status(500).json({
-            message : "DB error while creating"
+            message: "DB error while creating"
         })
     }
 })
 
 app.put('/course', async (req, res) => {
-    const { courseId, courseName, instructor, price, detail} = req.body;
+    const { courseId, courseName, instructor, price, detail } = req.body;
 
-    try{
+    try {
         console.log("inside try block");
-        const course = await courseModel.findByIdAndUpdate(courseId,{
+        const course = await courseModel.findByIdAndUpdate(courseId, {
             courseName, instructor, price, detail
-        }, { new : true })
+        }, { new: true })
         console.log("updation finish");
 
         res.json({
-            message : "course updation successfull",
+            message: "course updation successfull",
             course
         })
-    }catch(e){
+    } catch (e) {
         console.log(e);
         return res.status(500).json({
-            message : "DB error while updating"
+            message: "DB error while updating"
         })
     }
 })
 
 app.delete('/course', async (req, res) => {
     console.log(req.body.courseId);
-    try{
+    try {
         const course = await courseModel.findByIdAndDelete(req.body.courseId);
-        
-        console.log("after deletion is completed"+ course)
+
+        console.log("after deletion is completed" + course)
 
         res.json({
-            message : "course delete successful"
+            message: "course delete successful"
         })
-    }catch(e){
+    } catch (e) {
         res.status(500).json({
             message: "DB error while deleting"
         })
