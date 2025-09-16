@@ -234,13 +234,12 @@ app.post('/course', async (req, res) => {
 
 app.put('/course', async (req, res) => {
     const { courseId, courseName, instructor, price, detail} = req.body;
-    console.log(courseId, detail);
 
     try{
         console.log("inside try block");
         const course = await courseModel.findByIdAndUpdate(courseId,{
             courseName, instructor, price, detail
-        })
+        }, { new : true })
         console.log("updation finish");
 
         res.json({
@@ -255,10 +254,13 @@ app.put('/course', async (req, res) => {
     }
 })
 
-app.delete('/course', (req, res) => {
+app.delete('/course', async (req, res) => {
+    console.log(req.body.courseId);
     try{
-        const course = courseModel.findByIdAndDelete(req.body.courseId);
+        const course = await courseModel.findByIdAndDelete(req.body.courseId);
         
+        console.log("after deletion is completed"+ course)
+
         res.json({
             message : "course delete successful"
         })

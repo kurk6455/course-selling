@@ -9,9 +9,43 @@
 </head>
 
 <body>
-    <div id="courseList">
+    <div id="Courses">
         <h1>Course list -</h1>
-        
+        <div id="courseList">
+            <div id="courseName">
+                <span style="font-weight: 600;">Course Name - </span>
+                <span>${course.courseName}</span>
+            </div>
+            <div id="instructor">
+                <span style="font-weight: 600;">Instructor - </span>
+                <span>${course.instructor}</span>
+            </div>
+            <div id="price">
+                <span style="font-weight: 600;">Price - </span>
+                <span>${course.price}</span>
+            </div>
+            <div id="detail">
+                <div id="summary">
+                    <span style="font-weight: 600;">Summary - </span>
+                    <span>${course.detail.summary}</span>
+                </div>
+                <div id="duration">
+                    <span style="font-weight: 600;">Course Duration - </span>
+                    <span>${course.detail.duration}</span>
+                </div>
+                <div id="practiseTest"> 
+                    <span style="font-weight: 600;">Practise Test - </span>
+                    <span>${course.detail.practiseTest}</span>
+                </div>
+                <div id="certificate">
+                    <span style="font-weight: 600;">Certificate of completion - </span>
+                    <span>${course.detail.certificate}</span>
+                </div>
+            </div>
+            <button onclick="deleteCourse('${course._id}')">delete course</button>
+            <button onclick="updateCourse('${course._id}')">update course</button>
+            <br><br>
+        </div>
     </div>
 
     </div>
@@ -44,41 +78,61 @@
         const certificateBox = document.getElementById('certificateBox');
 
 
-        async function onLoad(){
-            try{
+        async function onLoad() {
+            try {
                 const response = await axios({
-                    method : 'get',
-                    url : 'http://localhost:3000/courses',
+                    method: 'get',
+                    url: 'http://localhost:3000/courses',
                 })
 
-                const {courses} = response.data;
-                const len = courses.length;
+                const { courses } = response.data;
+                courseList.innerHTML = "";
 
-                courses.forEach( course => {
+                courses.forEach(course => {
                     //Create a new div element
                     const courseEle = document.createElement('div');
                     courseEle.innerHTML = `
-                    <div  id="courseName">Course Name - ${course.courseName}</div>
-                    <div  id="instructor">Instructor - ${course.instructor}</div>
-                    <div  id="price">Price - ${course.price}</div>
+                    <div id="courseName">
+                        <span style="font-weight: 600;">Course Name - </span>
+                        <span>${course.courseName}</span>
+                    </div>
+                    <div id="instructor">
+                        <span style="font-weight: 600;">Instructor - </span>
+                        <span>${course.instructor}</span>
+                    </div>
+                    <div id="price">
+                        <span style="font-weight: 600;">Price - </span>
+                        <span>${course.price}</span>
+                    </div>
                     <div id="detail">
-                        <div  id="summary">Summary - ${course.detail.summary}</div>
-                        <div  id="duration">hrs - ${course.detail.duration}</div>
-                        <div  id="practiseTest">Practise Test - ${course.detail.practiseTest}</div>
-                        <div  id="certificate">Certificate of completion - ${course.detail.certificate}</div>
+                        <div id="summary">
+                            <span style="font-weight: 600;">Summary - </span>
+                            <span>${course.detail.summary}</span>
+                        </div>
+                        <div id="duration">
+                            <span style="font-weight: 600;">Course Duration - </span>
+                            <span>${course.detail.duration}</span>
+                        </div>
+                        <div id="practiseTest"> 
+                            <span style="font-weight: 600;">Practise Test - </span>
+                            <span>${course.detail.practiseTest}</span>
+                        </div>
+                        <div id="certificate">
+                            <span style="font-weight: 600;">Certificate of completion - </span>
+                            <span>${course.detail.certificate}</span>
+                        </div>
                     </div>
                     <button onclick="deleteCourse('${course._id}')">delete course</button>
                     <button onclick="updateCourse('${course._id}')">update course</button>
                     <br><br>`;
 
-                    courseEle.style.fontWeight = 500;
                     courseEle.setAttribute('class', 'course');
                     courseEle.setAttribute('id', course._id);
 
 
                     courseList.appendChild(courseEle);
                 });
-            }catch(e){
+            } catch (e) {
                 console.log(e);
             }
         }
@@ -103,17 +157,38 @@
             //Create a new div element
             const courseEle = document.createElement('div');
             courseEle.innerHTML = `
-            <div  id="courseName">Course Name - ${courseName}</div>
-            <div  id="instructor">Instructor - ${instructor}</div>
-            <div  id="price">Price - ${price}</div>
+            <div id="courseName">
+                <span style="font-weight: 600;">Course Name - </span>
+                <span>${courseName}</span>
+            </div>
+            <div id="instructor">
+                <span style="font-weight: 600;">Instructor - </span>
+                <span>${instructor}</span>
+            </div>
+            <div id="price">
+                <span style="font-weight: 600;">Price - </span>
+                <span>${price}</span>
+            </div>
             <div id="detail">
-                <div  id="summary">Summary - ${summary}</div>
-                <div  id="duration">hrs - ${duration}</div>
-                <div  id="practiseTest">Practise Test - ${practiseTest}</div>
-                <div  id="certificate">Certificate of completion - ${certificate}</div>
-            </div>`;
+                <div id="summary">
+                    <span style="font-weight: 600;">Summary - </span>
+                    <span>${summary}</span>
+                </div>
+                <div id="duration">
+                    <span style="font-weight: 600;">Course Duration - </span>
+                    <span>${duration}</span>
+                </div>
+                <div id="practiseTest"> 
+                    <span style="font-weight: 600;">Practise Test - </span>
+                    <span>${practiseTest}</span>
+                </div>
+                <div id="certificate">
+                    <span style="font-weight: 600;">Certificate of completion - </span>
+                    <span>${certificate}</span>
+                </div>
+            </div>
+            <br><br>`;
             //Update it's style
-            courseEle.style.fontWeight = 500;
             courseEle.style.opacity = 0.5;
 
             //Append it to courseListForm
@@ -134,14 +209,35 @@
                 const { course } = response.data;
                 console.log(course);
                 courseEle.innerHTML = `
-                <div  id="courseName">Course Name - ${course.courseName}</div>
-                <div  id="instructor">Instructor - ${course.instructor}</div>
-                <div  id="price">Price - ${course.price}</div>
+                <div id="courseName">
+                    <span style="font-weight: 600;">Course Name - </span>
+                    <span>${course.courseName}</span>
+                </div>
+                <div id="instructor">
+                    <span style="font-weight: 600;">Instructor - </span>
+                    <span>${course.instructor}</span>
+                </div>
+                <div id="price">
+                    <span style="font-weight: 600;">Price - </span>
+                    <span>${course.price}</span>
+                </div>
                 <div id="detail">
-                    <div  id="summary">Summary - ${course.detail.summary}</div>
-                    <div  id="duration">hrs - ${course.detail.duration}</div>
-                    <div  id="practiseTest">Practise Test - ${course.detail.practiseTest}</div>
-                    <div  id="certificate">Certificate of completion - ${course.detail.certificate}</div>
+                    <div id="summary">
+                        <span style="font-weight: 600;">Summary - </span>
+                        <span>${course.detail.summary}</span>
+                    </div>
+                    <div id="duration">
+                        <span style="font-weight: 600;">Course Duration - </span>
+                        <span>${course.detail.duration}</span>
+                    </div>
+                    <div id="practiseTest"> 
+                        <span style="font-weight: 600;">Practise Test - </span>
+                        <span>${course.detail.practiseTest}</span>
+                    </div>
+                    <div id="certificate">
+                        <span style="font-weight: 600;">Certificate of completion - </span>
+                        <span>${course.detail.certificate}</span>
+                    </div>
                 </div>
                 <button onclick="deleteCourse('${course._id}')">delete course</button>
                 <button onclick="updateCourse('${course._id}')">update course</button>
@@ -175,27 +271,27 @@
         }
 
         function updateCourse(id) {
-            const ele = document.getElementById(id);
+            const courseEle = document.getElementById(id);
 
             //select all the element from ele
-            const courseName = ele.querySelector('#courseName').textContent;
-            const instructor = ele.querySelector('#instructor').textContent;
-            const price = ele.querySelector('#price').textContent;
-            const summary = ele.querySelector('#summary').textContent;
-            const duration = ele.querySelector('#duration').textContent;
-            const practiseTest = ele.querySelector('#practiseTest').textContent;
-            const certificate = ele.querySelector('#certificate').textContent;
+            const courseName = courseEle.querySelector('#courseName > span:nth-child(2)').textContent;
+            const instructor = courseEle.querySelector('#instructor > span:nth-child(2)').textContent;
+            const price = courseEle.querySelector('#price > span:nth-child(2)').textContent;
+            const summary = courseEle.querySelector('#summary > span:nth-child(2)').textContent;
+            const duration = courseEle.querySelector('#duration > span:nth-child(2)').textContent;
+            const practiseTest = courseEle.querySelector('#practiseTest > span:nth-child(2)').textContent;
+            const certificate = courseEle.querySelector('#certificate > span:nth-child(2)').textContent;
 
             //creating an updating form in the same instance
-            ele.innerHTML = `
-            <input type="text" id="courseNameBox" placeholder="${courseName} ..." required/>
-            <input type="text" id="instructorBox" placeholder="${instructor} ..." required/>
-            <input type="text" id="priceBox" placeholder="${price} ..." required/>
+            courseEle.innerHTML = `
+            <input type="text" id="courseNameBox" value="${courseName}" required/>
+            <input type="text" id="instructorBox" value="${instructor}" required/>
+            <input type="text" id="priceBox" value="${price}" required/>
             <div>
                 <p>Detail - </p>
-                <input type="text" id="summaryBox" placeholder="${summary} ..." required/>
-                <input type="text" id="durationBox" placeholder="${duration} ..." required/>
-                <input type="text" id="practiseTestBox" placeholder="${practiseTest} ..." required/><br />
+                <input type="text" id="summaryBox" value="${summary}" required/>
+                <input type="text" id="durationBox" value="${duration}" required/>
+                <input type="text" id="practiseTestBox" value="${practiseTest}" required/><br />
             </div>
             <label for="certificate">Certificate of completion -</label>
             <input type="checkbox" id="certificateBox" checked><br><br>
@@ -204,57 +300,98 @@
         }
 
         async function saveCourse(id) {
-            const ele = document.getElementById(id);
-            //select all the value of element from ele form
-            const courseName = ele.querySelector('#courseNameBox').value;
-            const instructor = ele.querySelector('#instructorBox').value;
-            const price = ele.querySelector('#priceBox').value;
-            const summary = ele.querySelector('#summaryBox').value;
-            const duration = ele.querySelector('#durationBox').value;
-            const practiseTest = ele.querySelector('#practiseTestBox').value;
-            let certificate = ele.querySelector('#certificateBox').value;  
-            if(certificate == 'on') certificate = true;
-            else certificate = false;      
+            const courseEle = document.getElementById(id);
 
-            ele.innerHTML = `
-            <div  id="courseName">Course Name - ${courseName}</div>
-            <div  id="instructor">Instructor - ${instructor}</div>
-            <div  id="price">Price - ${price}</div>
+            //select all the value of element from ele form
+            const courseName = courseEle.querySelector('#courseNameBox').value;
+            const instructor = courseEle.querySelector('#instructorBox').value;
+            const price = courseEle.querySelector('#priceBox').value;
+            const summary = courseEle.querySelector('#summaryBox').value;
+            const duration = courseEle.querySelector('#durationBox').value;
+            const practiseTest = courseEle.querySelector('#practiseTestBox').value;
+            let certificate = courseEle.querySelector('#certificateBox').value;
+            if (certificate == 'on') certificate = true;
+            else certificate = false;
+
+            courseEle.innerHTML = `
+            <div id="courseName">
+                <span style="font-weight: 600;">Course Name - </span>
+                <span>${courseName}</span>
+            </div>
+            <div id="instructor">
+                <span style="font-weight: 600;">Instructor - </span>
+                <span>${instructor}</span>
+            </div>
+            <div id="price">
+                <span style="font-weight: 600;">Price - </span>
+                <span>${price}</span>
+            </div>
             <div id="detail">
-                <div  id="summary">Summary - ${summary}</div>
-                <div  id="duration">hrs - ${duration}</div>
-                <div  id="practiseTest">Practise Test - ${practiseTest}</div>
-                <div  id="certificate">Certificate of completion - ${certificate}</div>
-            </div>`;
-            ele.style.opacity = 0.5;
+                <div id="summary">
+                    <span style="font-weight: 600;">Summary - </span>
+                    <span>${summary}</span>
+                </div>
+                <div id="duration">
+                    <span style="font-weight: 600;">Course Duration - </span>
+                    <span>${duration}</span>
+                </div>
+                <div id="practiseTest"> 
+                    <span style="font-weight: 600;">Practise Test - </span>
+                    <span>${practiseTest}</span>
+                </div>
+                <div id="certificate">
+                    <span style="font-weight: 600;">Certificate of completion - </span>
+                    <span>${certificate}</span>
+                </div>
+            </div>
+            <br><br>`;
+            courseEle.style.opacity = 0.5;
 
             try {
-                console.log("client side - try block")
                 const response = await axios({
                     method: 'put',
                     url: 'http://localhost:3000/course',
                     data: {
-                        courseId : id, courseName, instructor, price, detail: { summary, duration, practiseTest, certificate }
+                        courseId: id, courseName, instructor, price, detail: { summary, duration, practiseTest, certificate }
                     }
                 })
 
-                console.log("client side - after response")
-
-                const {course} = response.data;
-                ele.innerHTML = `
-                <div  id="courseName">Course Name - ${course.courseName}</div>
-                <div  id="instructor">Instructor - ${course.instructor}</div>
-                <div  id="price">Price - ${course.price}</div>
+                const { course } = response.data;
+                courseEle.innerHTML = `
+                <div id="courseName">
+                    <span style="font-weight: 600;">Course Name - </span>
+                    <span>${course.courseName}</span>
+                </div>
+                <div id="instructor">
+                    <span style="font-weight: 600;">Instructor - </span>
+                    <span>${course.instructor}</span>
+                </div>
+                <div id="price">
+                    <span style="font-weight: 600;">Price - </span>
+                    <span>${course.price}</span>
+                </div>
                 <div id="detail">
-                    <div  id="summary">Summary - ${course.detail.summary}</div>
-                    <div  id="duration">hrs - ${course.detail.duration}</div>
-                    <div  id="practiseTest">Practise Test - ${course.detail.practiseTest}</div>
-                    <div  id="certificate">Certificate of completion - ${course.detail.certificate}</div>
+                    <div id="summary">
+                        <span style="font-weight: 600;">Summary - </span>
+                        <span>${course.detail.summary}</span>
+                    </div>
+                    <div id="duration">
+                        <span style="font-weight: 600;">Course Duration - </span>
+                        <span>${course.detail.duration}</span>
+                    </div>
+                    <div id="practiseTest"> 
+                        <span style="font-weight: 600;">Practise Test - </span>
+                        <span>${course.detail.practiseTest}</span>
+                    </div>
+                    <div id="certificate">
+                        <span style="font-weight: 600;">Certificate of completion - </span>
+                        <span>${course.detail.certificate}</span>
+                    </div>
                 </div>
                 <button onclick="deleteCourse('${course._id}')">delete course</button>
                 <button onclick="updateCourse('${course._id}')">update course</button>
                 <br><br>`;
-                ele.style.opacity = 1;
+                courseEle.style.opacity = 1;
             } catch (e) {
                 console.log(e);
             }
