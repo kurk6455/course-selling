@@ -41,7 +41,7 @@
             const signupPassword = document.getElementById('signupPassword').value;
 
             try {
-                const response = await axios.post('http://localhost:3000/userSignup', {
+                const response = await axios.post('http://localhost:3000/adminSignup', {
                     adminName, email: signupEmail, password: signupPassword
                 })
 
@@ -65,14 +65,14 @@
             const loginPassword = document.getElementById('loginPassword').value;
 
             try {
-                const response = await axios.post('http://localhost:3000/userLogin', {
+                const response = await axios.post('http://localhost:3000/adminLogin', {
                     email: loginEmail, password: loginPassword
                 })
 
                 console.log(response.data);
-                //BROKEN - user token already present with the same token name
+                //BROKEN - user token is also generated with the same name
                 localStorage.setItem('token', response.data.token);
-                window.location.href = './course.html';
+                window.location.href = './courses.html';
             } catch (e) {
                 //logging all the zod error
                 if (e.response.data && e.response.data.errors) {

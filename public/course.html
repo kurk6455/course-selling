@@ -203,6 +203,9 @@
                     url: 'http://localhost:3000/course',
                     data: {
                         courseName, instructor, price, detail: { summary, duration, practiseTest, certificate }
+                    },
+                    headers : {
+                        token : localStorage.getItem('token')
                     }
                 })
 
@@ -261,6 +264,9 @@
                     url: 'http://localhost:3000/course',
                     data: {
                         courseId: id
+                    }, 
+                    headers : {
+                        token : localStorage.getItem('token')
                     }
                 })
 
@@ -353,6 +359,9 @@
                     url: 'http://localhost:3000/course',
                     data: {
                         courseId: id, courseName, instructor, price, detail: { summary, duration, practiseTest, certificate }
+                    }, 
+                    headers : {
+                        token : localStorage.getItem('token')
                     }
                 })
 

@@ -223,7 +223,7 @@ app.post('/adminLogin', zodAuth, async (req, res) => {
     }
 })
 
-app.post('/course', async (req, res) => {
+app.post('/course', adminAuth, async (req, res) => {
     const { courseName, instructor, price, detail } = req.body;
     console.log(courseName, detail);
 
@@ -243,7 +243,7 @@ app.post('/course', async (req, res) => {
     }
 })
 
-app.put('/course', async (req, res) => {
+app.put('/course', adminAuth, async (req, res) => {
     const { courseId, courseName, instructor, price, detail } = req.body;
 
     try {
@@ -265,7 +265,7 @@ app.put('/course', async (req, res) => {
     }
 })
 
-app.delete('/course', async (req, res) => {
+app.delete('/course', adminAuth, async (req, res) => {
     console.log(req.body.courseId);
     try {
         const course = await courseModel.findByIdAndDelete(req.body.courseId);
