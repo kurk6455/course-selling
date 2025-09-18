@@ -52,7 +52,7 @@
             try {
                 const response = await axios({
                     method: 'get',
-                    url: 'http://localhost:3000/purchasedCourse',
+                    url: 'http://localhost:3000/api/user/purchasedCourse',
                     headers: {
                         token : localStorage.getItem('token')
                     }
@@ -120,7 +120,7 @@
             try {
                 const response = await axios({
                     method: 'delete',
-                    url: 'http://localhost:3000/purchasedCourse',
+                    url: 'http://localhost:3000/api/userpurchasedCourse',
                     data: {
                         courseId: id
                     },

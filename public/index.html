@@ -41,7 +41,7 @@
             const signupPassword = document.getElementById('signupPassword').value;
 
             try {
-                const response = await axios.post('http://localhost:3000/userSignup', {
+                const response = await axios.post('http://localhost:3000/api/user/signup', {
                     userName, email: signupEmail, password: signupPassword
                 })
 
@@ -65,7 +65,7 @@
             const loginPassword = document.getElementById('loginPassword').value;
 
             try {
-                const response = await axios.post('http://localhost:3000/userLogin', {
+                const response = await axios.post('http://localhost:3000/api/user/login', {
                     email: loginEmail, password: loginPassword
                 })
 

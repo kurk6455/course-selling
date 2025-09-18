@@ -58,7 +58,7 @@
             try {
                 const response = await axios({
                     method: 'get',
-                    url: 'http://localhost:3000/courses',
+                    url: 'http://localhost:3000/api/user/courses',
                 })
 
                 const { courses } = response.data;
@@ -120,7 +120,7 @@
             try {
                 const response = await axios({
                     method: 'post',
-                    url: 'http://localhost:3000/purchase',
+                    url: 'http://localhost:3000/api/user/purchase',
                     data: {
                         courseId: id
                     },

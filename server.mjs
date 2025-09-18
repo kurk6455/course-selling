@@ -7,6 +7,7 @@ import 'dotenv/config';
 const { JWT_SECRET, mongodbClusterString } = process.env;
 import bcrypt from 'bcrypt';
 import { userAuth, adminAuth, zodAuth } from './auth.mjs';
+import {userRoute} from './routes/user.route.mjs';
 
 const app = express();
 try {
@@ -19,148 +20,151 @@ try {
 
 app.use(cors());
 app.use(express.json());
+app.use('/api/user', userRoute);
 
 
-app.post('/userSignup', zodAuth, async (req, res) => {
-    //If validated retrive
-    const { userName, email, password } = req.body;
-    console.log(userName + " " + email + " " + password);
 
-    //Store only hashed password in db
-    const hashPassword = await bcrypt.hash(password, 5);
 
-    //DB call
-    try {
-        const user = await userModel.create({
-            userName, email, password: hashPassword
-        })
+// app.post('/userSignup', zodAuth, async (req, res) => {
+//     //If validated retrive
+//     const { userName, email, password } = req.body;
+//     console.log(userName + " " + email + " " + password);
 
-        res.json({
-            message: "User : Signup successfull"
-        });
+//     //Store only hashed password in db
+//     const hashPassword = await bcrypt.hash(password, 5);
 
-    } catch (e) {
-        return res.status(403).json({
-            message: "User : Email alread exist login"
-        });
-    }
-})
+//     //DB call
+//     try {
+//         const user = await userModel.create({
+//             userName, email, password: hashPassword
+//         })
 
-app.post('/userLogin', zodAuth, async (req, res) => {
-    //If validate retrive
-    const { email, password } = req.body;
-    console.log(email + " " + password);
+//         res.json({
+//             message: "User : Signup successfull"
+//         });
 
-    //DB call
-    try {
-        const user = await userModel.findOne({
-            email
-        })
+//     } catch (e) {
+//         return res.status(403).json({
+//             message: "User : Email alread exist login"
+//         });
+//     }
+// })
 
-        //compare b/w the plain password and hashed
-        const decodedPassword = await bcrypt.compare(password, user.password);
-        if (!decodedPassword) {
-            return res.status(403).json({
-                message: "User : Invalid password"
-            });
-        }
+// app.post('/userLogin', zodAuth, async (req, res) => {
+//     //If validate retrive
+//     const { email, password } = req.body;
+//     console.log(email + " " + password);
 
-        //Generate token - should be inside it's own try-catch
-        const token = jwt.sign(user._id.toString(), JWT_SECRET);
+//     //DB call
+//     try {
+//         const user = await userModel.findOne({
+//             email
+//         })
 
-        res.json({
-            token: `bearer user ${token}`,
-            message: "User : login successful"
-        })
+//         //compare b/w the plain password and hashed
+//         const decodedPassword = await bcrypt.compare(password, user.password);
+//         if (!decodedPassword) {
+//             return res.status(403).json({
+//                 message: "User : Invalid password"
+//             });
+//         }
 
-    } catch (e) {
-        return res.status(403).json({
-            message: "User : Invalid email"
-        })
-    }
-})
+//         //Generate token - should be inside it's own try-catch
+//         const token = jwt.sign(user._id.toString(), JWT_SECRET);
 
-app.get('/courses', async (req, res) => {
-    //DB call - without authentication
-    try {
-        const courses = await courseModel.find({});
+//         res.json({
+//             token: `bearer user ${token}`,
+//             message: "User : login successful"
+//         })
 
-        res.json({
-            courses
-        })
-    } catch (e) {
-        return res.status(500).json({
-            message: "Unable to find courses"
-        });
-    }
-})
+//     } catch (e) {
+//         return res.status(403).json({
+//             message: "User : Invalid email"
+//         })
+//     }
+// })
 
-app.post('/purchase', userAuth, async (req, res) => {
-    const { userId } = req.headers;
-    const { courseId } = req.body;
+// app.get('/courses', async (req, res) => {
+//     //DB call - without authentication
+//     try {
+//         const courses = await courseModel.find({});
 
-    try {
-        const purchase = purchaseModel.create({
-            userId, courseId
-        })
+//         res.json({
+//             courses
+//         })
+//     } catch (e) {
+//         return res.status(500).json({
+//             message: "Unable to find courses"
+//         });
+//     }
+// })
 
-        res.json({
-            message: `Purchase successful`
-        })
-    } catch (e) {
-        res.status(500).json({
-            message: "Unable to find the course"
-        })
-    }
-})
+// app.post('/purchase', userAuth, async (req, res) => {
+//     const { userId } = req.headers;
+//     const { courseId } = req.body;
 
-app.get('/purchasedCourse', userAuth, async (req, res) => {
-    const { userId } = req.headers;
-    // console.log(userId);
+//     try {
+//         const purchase = purchaseModel.create({
+//             userId, courseId
+//         })
 
-    try {
-        const purchased = await purchaseModel.find({ userId });
-        if (purchased.length == 0) {
-            return res.status(200).json({
-                courses: []
-            });
-        }
-        // console.log(purchased);
-        const courseIds = purchased.map(ele => ele.courseId);
-        const courses = await courseModel.find({
-            _id: {
-                $in : courseIds
-            }
-        })
+//         res.json({
+//             message: `Purchase successful`
+//         })
+//     } catch (e) {
+//         res.status(500).json({
+//             message: "Unable to find the course"
+//         })
+//     }
+// })
 
-        // console.log(courses);
-        res.json({
-            courses
-        })
-    } catch (e) {
-        return res.status(500).json({
-            message: "unable to find the course that you purchased"
-        })
-    }
-})
+// app.get('/purchasedCourse', userAuth, async (req, res) => {
+//     const { userId } = req.headers;
+//     // console.log(userId);
 
-app.delete('/purchasedCourse', userAuth, async (req, res) => {
-    const { userId } = req.headers;
-    const { courseId } = req.body;
-    console.log(userId);
+//     try {
+//         const purchased = await purchaseModel.find({ userId });
+//         if (purchased.length == 0) {
+//             return res.status(200).json({
+//                 courses: []
+//             });
+//         }
+//         // console.log(purchased);
+//         const courseIds = purchased.map(ele => ele.courseId);
+//         const courses = await courseModel.find({
+//             _id: {
+//                 $in : courseIds
+//             }
+//         })
 
-    try {
-        const purchased = await purchaseModel.findOneAndDelete({ userId, courseId });
+//         // console.log(courses);
+//         res.json({
+//             courses
+//         })
+//     } catch (e) {
+//         return res.status(500).json({
+//             message: "unable to find the course that you purchased"
+//         })
+//     }
+// })
 
-        res.json({
-            message: "Course delete successfull"
-        })
-    } catch (e) {
-        return res.status(500).json({
-            message: "unable to delete course that you purchased"
-        })
-    }
-})
+// app.delete('/purchasedCourse', userAuth, async (req, res) => {
+//     const { userId } = req.headers;
+//     const { courseId } = req.body;
+//     console.log(userId);
+
+//     try {
+//         const purchased = await purchaseModel.findOneAndDelete({ userId, courseId });
+
+//         res.json({
+//             message: "Course delete successfull"
+//         })
+//     } catch (e) {
+//         return res.status(500).json({
+//             message: "unable to delete course that you purchased"
+//         })
+//     }
+// })
 
 
 app.post('/adminSignup', zodAuth, async (req, res) => {
